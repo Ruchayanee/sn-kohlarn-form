@@ -7,35 +7,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; background-color: #f7f9fc; color: #333; text-align: center; padding: 20px; }
-        .container { background-color: #fff; border: 1px solid #ddd; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05); min-height: 400px; display: flex; flex-direction: column; justify-content: center; }
+        .container { background-color: #fff; border: 1px solid #ddd; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05); min-height: 420px; display: flex; flex-direction: column; justify-content: center; }
         h2 { color: #001F3F; margin-top: 0; }
         input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #ccc; box-sizing: border-box; font-family: 'Kanit', sans-serif; font-size: 16px; }
         
-        /* ปุ่มหลัก */
+        /* ปุ่มส่งข้อมูล */
         #btnSubmit { background-color: #001F3F; color: #fff; font-weight: bold; cursor: pointer; border: none; }
         #btnSubmit:hover { background-color: #003366; }
         
-        /* ปุ่มปิดหน้านี้ */
-        #btnClose { background-color: #28a745; color: #fff; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; }
+        /* ปุ่มปิดหน้านี้ (สีเขียวเด่นชัด) */
+        #btnClose { background-color: #28a745; color: #fff; font-weight: bold; cursor: pointer; border: none; margin-top: 25px; font-size: 18px; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
         #btnClose:hover { background-color: #218838; }
 
         .loading { display: none; color: #001F3F; margin-top: 10px; }
         
-        /* สไตล์หน้าจอสำเร็จ */
+        /* หน้าจอสำเร็จ */
         #success-section { display: none; }
-        .success-icon { font-size: 80px; color: #28a745; margin-bottom: 10px; animation: scaleUp 0.5s ease-out; }
-        @keyframes scaleUp { from { transform: scale(0); } to { transform: scale(1); } }
+        .success-icon { font-size: 90px; color: #28a745; margin-bottom: 15px; animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ส่วนที่ 1: หน้าฟอร์มกรอกข้อมูล -->
+        <!-- ส่วนที่ 1: หน้าฟอร์มหลัก -->
         <div id="form-section">
             <h2 id="welcome">ยืนยันการจองห้องพัก</h2>
-            <p style="color: #666; margin-bottom: 20px;">กรุณาแนบหลักฐานการโอนเงินเพื่อยืนยัน</p> 
+            <p style="color: #666;">กรุณาแนบหลักฐานการโอนเงินเพื่อยืนยัน</p> 
             
-            <input type="text" id="custName" placeholder="ชื่อ-นามสกุล หรือ ชื่อที่ใช้จอง">
-            <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ติดต่อ">
+            <input type="text" id="custName" placeholder="ชื่อที่ใช้จอง (เช่น คุณสมชาย)">
+            <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
             
             <div style="text-align: left; margin-top: 10px; font-size: 14px; color: #888;">แนบรูปสลิปโอนเงิน:</div>
             <input type="file" id="fileInput" accept="image/*">
@@ -43,18 +49,22 @@
             <button onclick="submitData()" id="btnSubmit">ส่งหลักฐานการโอนเงิน</button>
             
             <div id="loader" class="loading">
-                <div style="margin-bottom: 5px; font-weight: bold;">กำลังบันทึกข้อมูล...</div>
-                <small>กรุณารอสักครู่ ระบบกำลังอัปโหลดรูปภาพ</small>
+                <div style="font-weight: bold;">กำลังประมวลผล...</div>
+                <small>กรุณาอย่าปิดหน้านี้ ระบบกำลังอัปโหลดรูปภาพ</small>
             </div>
         </div>
 
-        <!-- ส่วนที่ 2: หน้าจอเมื่อส่งสำเร็จ (เด้งมาหน้านี้แทน) -->
+        <!-- ส่วนที่ 2: หน้าจอใหม่เมื่อส่งสำเร็จ (เด้งมาหน้านี้แทน) -->
         <div id="success-section">
             <div class="success-icon">✅</div>
-            <h2 style="color: #28a745;">ยืนยันการโอนสำเร็จ</h2>
-            <p>ระบบได้รับข้อมูลเรียบร้อยแล้วครับ<br>ขอบคุณที่ใช้บริการ <b>SN Kohlarn</b></p>
+            <h2 style="color: #28a745; margin-bottom: 10px;">ยืนยันการโอนสำเร็จ</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+                ระบบได้รับข้อมูลของท่านแล้วครับ<br>
+                ขอบคุณที่ไว้วางใจพักกับเรา<br>
+                <b>SN Kohlarn</b>
+            </p>
             
-            <button onclick="liff.closeWindow()" id="btnClose">ปิดหน้านี้</button>
+            <button onclick="liff.closeWindow()" id="btnClose">ปิดหน้าต่างนี้</button>
         </div>
     </div>
 
@@ -63,7 +73,6 @@
         let lineName = "ลูกค้า";
         let userId = "ไม่มีข้อมูล";
 
-        // 🚨 ตรวจสอบลิงก์ GAS ของคุณทนายอีกครั้งนะครับ 🚨
         const LIFF_ID = "2009967777-0DZ3XlPg"; 
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyLFO7dgjgdeDY5ETh7B_mV-bJG8T_tHnw-a41sOTfw9EKCoknUv2MJ2CP9yVJtL9CbfA/exec"; 
 
@@ -87,12 +96,11 @@
             const phone = document.getElementById("phone").value;
 
             if (!fileInput || !custName || !phone) {
-                alert("กรุณากรอกข้อมูลและแนบรูปสลิปให้ครบถ้วนนะครับ");
+                alert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนส่งนะครับ");
                 return;
             }
 
-            // ซ่อนปุ่มเดิมและแสดง Loading
-            document.getElementById("btnSubmit").style.display = "none";
+            document.getElementById("form-section").style.display = "none";
             document.getElementById("loader").style.display = "block";
 
             const reader = new FileReader();
@@ -113,29 +121,22 @@
                 .then(response => response.json())
                 .then(res => {
                     if(res.status === "success") {
-                        // 🎯 เด้งไปหน้าจอสำเร็จ
-                        showSuccessScreen();
+                        // 🎯 แสดงหน้าจอสำเร็จแบบใหม่
+                        document.getElementById("loader").style.display = "none";
+                        document.getElementById("success-section").style.display = "block";
                     } else {
-                        alert("พบข้อผิดพลาด: " + res.message);
-                        resetButton();
+                        alert("เกิดข้อผิดพลาด: " + res.message);
+                        document.getElementById("form-section").style.display = "block";
+                        document.getElementById("loader").style.display = "none";
                     }
                 })
                 .catch(err => {
-                    alert("ระบบขัดข้องชั่วคราว กรุณาลองใหม่อีกครั้งครับ");
-                    resetButton();
+                    alert("การเชื่อมต่อขัดข้อง กรุณาลองใหม่อีกครั้งครับ");
+                    document.getElementById("form-section").style.display = "block";
+                    document.getElementById("loader").style.display = "none";
                 });
             };
             reader.readAsDataURL(fileInput);
-        }
-
-        function showSuccessScreen() {
-            document.getElementById("form-section").style.display = "none";
-            document.getElementById("success-section").style.display = "block";
-        }
-
-        function resetButton() {
-            document.getElementById("btnSubmit").style.display = "block";
-            document.getElementById("loader").style.display = "none";
         }
     </script>
 </body>
