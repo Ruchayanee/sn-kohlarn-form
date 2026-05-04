@@ -1,1 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>แจ้งโอนเงิน - SN Kohlarn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f7f9fc; color: #333; text-align: center; padding: 20px; }
+        .container { background-color: #fff; border: 1px solid #ddd; padding: 30px; border-radius: 15px; max-width: 400px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #001F3F; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+        button { background-color: #001F3F; color: #fff; font-weight: bold; cursor: pointer; border: none; font-size: 16px; }
+        button:hover { background-color: #003366; }
+        .loading { display: none; color: #001F3F; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="welcome">ยืนยันการจองห้องพัก</h2>
+        <p>กรุณาแนบหลักฐานการโอนเงินเพื่อยืนยัน</p> 
+        
+        <input type="text" id="custName" placeholder="ชื่อ-นามสกุล หรือ ชื่อที่ใช้จอง">
+        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์ติดต่อ">
+        
+        <div style="text-align: left; margin-top: 10px; font-size: 14px; color: #666;">แนบสลิปโอนเงิน:</div>
+        <input type="file" id="fileInput" accept="image/*">
+        
+        <button onclick="submitData()" id="btnSubmit">ส่งหลักฐานการโอน</button>
+        <div id="loader" class="loading">กำลังส่งข้อมูล... กรุณารอสักครู่</div>
+    </div>
 
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        let lineName = "ลูกค้า";
+        let userId = "ไม่มีข้อมูล";
+
+        // 🚨 แก้ไข 2 จุดนี้ให้เป็นของคุณทนายครับ 🚨
+        const LIFF_ID = "2009967777-0DZ3XlPg"; 
+        const GAS_WEB_APP_URL = "ลิงก์_GAS_ที่เพิ่งก๊อปมาในขั้นตอนที่_1"; 
+
+        window.onload = function() {
+            liff.init({ liffId: LIFF_ID }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        lineName = profile.displayName;
+                        userId = profile.userId;
+                        document.getElementById("welcome").innerText = "สวัสดีคุณ " + lineName;
+                    });
+                } else {
+                    liff.login();
+                }
+            });
+        };
+
+        function submitData() {
+            const fileInput = document.getElementById("fileInput").files[0];
+            const custName = document.getElementById("custName").value;
+            const phone = document.getElementById("phone").value;
+
+            if (!fileInput || !custName || !phone) {
+                alert("กรุณากรอกข้อมูลและแนบรูปสลิปให้ครบถ้วนครับ");
+                return;
+            }
+
+            document.getElementById("btnSubmit").style.display = "none";
+            document.getElementById("loader").style.display = "block";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = {
+                    fileData: e.target.result.split(",")[1],
+                    mimeType: fileInput.type,
+                    custName: custName,
+                    phone: phone,
+                    lineName: lineName,
+                    userId: userId
+                };
+                
+                // ส่งข้อมูลข้ามไปฝั่ง Google Apps Script
+                fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(res => {
+                    if(res.status === "success") {
+                        alert(res.message);
+                        liff.closeWindow(); 
+                    } else {
+                        alert("พบข้อผิดพลาดฝั่งเซิร์ฟเวอร์: " + res.message);
+                        document.getElementById("btnSubmit").style.display = "block";
+                        document.getElementById("loader").style.display = "none";
+                    }
+                })
+                .catch(err => {
+                    alert("เครือข่ายมีปัญหา กรุณาลองใหม่อีกครั้งครับ");
+                    document.getElementById("btnSubmit").style.display = "block";
+                    document.getElementById("loader").style.display = "none";
+                });
+            };
+            reader.readAsDataURL(fileInput);
+        }
+    </script>
+</body>
+</html>
