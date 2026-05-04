@@ -42,14 +42,15 @@
             <input type="file" id="fileInput" accept="image/*">
             
             <button onclick="submitData()" id="btnSubmit">ส่งหลักฐานการโอนเงิน</button>
-            
-            <div id="loader" class="loading">
-                <div style="font-weight: bold;">กำลังบันทึกข้อมูล...</div>
-                <small>กรุณาอย่าปิดหน้านี้ ระบบกำลังอัปโหลดรูปภาพ</small>
-            </div>
         </div>
 
-        <!-- ส่วนที่ 2: หน้าจอแจ้งปิดเอง (V.11) -->
+        <!-- ⚠️ ย้าย Loader ออกมาไว้ตรงนี้ครับ (นอก form-section) -->
+        <div id="loader" class="loading">
+            <div style="font-weight: bold;">กำลังบันทึกข้อมูล...</div>
+            <small>กรุณาอย่าปิดหน้านี้ ระบบกำลังอัปโหลดรูปภาพ</small>
+        </div>
+
+        <!-- ส่วนที่ 2: หน้าจอแจ้งปิดเอง -->
         <div id="success-section">
             <div class="success-icon">✅</div>
             <h2 style="color: #28a745; margin-bottom: 10px;">ยืนยันการโอนสำเร็จ</h2>
@@ -59,7 +60,6 @@
                 <b>SN Kohlarn</b>
             </p>
             
-            <!-- แทนที่ปุ่มด้วยคำแนะนำการปิดหน้าจอ -->
             <div class="instruction-box">
                 ท่านสามารถกดเครื่องหมาย [X] <br>
                 ที่มุมขวาบนเพื่อปิดหน้าต่างนี้ได้เลยครับ
@@ -113,14 +113,18 @@
                     userId: userId
                 };
                 
+                // ⚠️ อัปเกรด Fetch ป้องกันการโดน Google บล็อก (CORS)
                 fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
+                    redirect: 'follow', // ให้วิ่งตามลิงก์ไป
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8' // สำคัญมาก: หลอก Google ว่าเป็นข้อความธรรมดา
+                    },
                     body: JSON.stringify(data)
                 })
                 .then(response => response.json())
                 .then(res => {
                     if(res.status === "success") {
-                        // 🎯 แสดงหน้าจอคำแนะนำให้ปิดเอง
                         document.getElementById("loader").style.display = "none";
                         document.getElementById("success-section").style.display = "block";
                     } else {
@@ -130,6 +134,8 @@
                     }
                 })
                 .catch(err => {
+                    // ถ้ายังขึ้นขัดข้อง แปลว่าฝั่ง Google Code.gs ยังไม่ได้ Deploy เป็นเวอร์ชันใหม่ครับ
+                    console.error("Error Detail: ", err);
                     alert("การเชื่อมต่อขัดข้อง กรุณาลองใหม่อีกครั้งครับ");
                     document.getElementById("form-section").style.display = "block";
                     document.getElementById("loader").style.display = "none";
