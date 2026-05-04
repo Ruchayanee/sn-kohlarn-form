@@ -54,18 +54,23 @@
             </div>
         </div>
 
-        <!-- ส่วนที่ 2: หน้าจอใหม่เมื่อส่งสำเร็จ (เด้งมาหน้านี้แทน) -->
-        <div id="success-section">
-            <div class="success-icon">✅</div>
-            <h2 style="color: #28a745; margin-bottom: 10px;">ยืนยันการโอนสำเร็จ</h2>
-            <p style="font-size: 16px; line-height: 1.6;">
-                ระบบได้รับข้อมูลของท่านแล้วครับ<br>
-                ขอบคุณที่ไว้วางใจพักกับเรา<br>
-                <b>SN Kohlarn</b>
-            </p>
-            
-            <button onclick="liff.closeWindow()" id="btnClose">ปิดหน้าต่างนี้</button>
-        </div>
+        <!-- ส่วนของหน้าจอสำเร็จที่ปรับปรุงใหม่ -->
+<div id="success-section">
+    <div class="success-icon">✅</div>
+    <h2 style="color: #28a745; margin-bottom: 10px;">ยืนยันการโอนสำเร็จ</h2>
+    <p style="font-size: 16px; line-height: 1.6;">
+        ระบบได้รับข้อมูลของท่านแล้วครับ<br>
+        ขอบคุณที่ไว้วางใจพักกับเรา<br>
+        <b>SN Kohlarn</b>
+    </p>
+    
+    <button onclick="liff.closeWindow()" id="btnClose">ปิดหน้าต่างนี้</button>
+    
+    <!-- เพิ่มข้อความแจ้งเตือนลูกค้าเพื่อความสบายใจ -->
+    <p style="font-size: 12px; color: #888; margin-top: 10px;">
+        *หากมีหน้าต่างถามยืนยัน ให้กด <b>"ตกลง"</b> หรือ <b>"เปิด"</b> นะครับ
+    </p>
+</div>
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
